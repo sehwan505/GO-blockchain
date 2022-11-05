@@ -1,1 +1,1 @@
-# ready-for-smart-farm
+# blockchain study with GOlang
