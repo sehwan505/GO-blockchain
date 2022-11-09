@@ -1,29 +1,46 @@
 package main
 
 import (
-	"math"
+	"math/big"
+	"bytes"
 	"fmt"
 	"crypto/sha256"
+	"math"
 )
 const targetBits = 24
+const maxNonce = math.MaxInt64
+
+type Block struct {
+	Timestamp int64
+	Data []byte
+	PrevBlockHash []byte
+	Hash []byte
+	Nonce         int
+}
+
+func IntToHex(num int64) []byte {
+	buff := new(bytes.Buffer)
+	return buff.Bytes()
+}
 
 type ProofOfWork struct {
 	block *Block
-	target *bit.Int
+	target *big.Int
 }
 
-func NewProofofWork(b *Block) *ProofOfWork{
+func NewProofOfWork(b *Block) *ProofOfWork{
 	target := big.NewInt(1)
 	target.Lsh(target, uint(256 - targetBits))
 	
 	pow := &ProofOfWork{b, target}
+	return pow
 }
 
 
 func (pow *ProofOfWork) prepareData(nonce int) []byte {
         data := bytes.Join(
                 [][]byte{
-                        pow.block.PrevBlockchain,
+                        pow.block.PrevBlockHash,
                         pow.block.Data,
                         IntToHex(pow.block.Timestamp),
                         IntToHex(int64(targetBits)),
@@ -35,7 +52,7 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 }
 
 func (pow *ProofOfWork) Run() (int, []byte){
-	var hashInt big.hashInt
+	var hashInt big.Int
 	var hash [32]byte
 	nonce := 0
 	
@@ -46,11 +63,10 @@ func (pow *ProofOfWork) Run() (int, []byte){
 		hash = sha256.Sum256(data)
 		fmt.Printf("\r%x", hash)
 		
-		hashInt.setBytes(hash[:])
-		if hashInt.cmp(pow.target) == -1{
+		hashInt.SetBytes(hash[:])
+		if hashInt.Cmp(pow.target) == -1{
 			break
-		}
-		else{
+		} else {
 			nonce++
 		}
 	}
@@ -58,3 +74,13 @@ func (pow *ProofOfWork) Run() (int, []byte){
 	return nonce, hash[:]
 }
 
+func (pow *ProofOfWork) Validate() bool {
+	var hashInt big.Int
+	
+	data := pow.prepareData(pow.block.Nonce)
+	hash := sha256.Sum256(data)
+	hashInt.SetBytes(hash[:])
+	
+	isValid := hashInt.Cmp(pow.target) == -1
+	return isValid
+}
