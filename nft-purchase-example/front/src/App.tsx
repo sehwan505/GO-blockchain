@@ -30,8 +30,10 @@ const App: FC = () => {
 	}, [account]);
 	
 	return (
-		// <div>{account}</div> 
+		<>
+		<div>{account}</div>
 		<Main account={account}/>
+		</>
 	)
 };
 
