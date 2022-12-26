@@ -1,5 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import Main from "./routes/main"
+import MyPage from "./routes/mypage"
+import { BrowserRouter, Routes,  Route } from "react-router-dom";
 
 const App: FC = () => {
 	const [account, setAccount] = useState<string>("");
@@ -31,8 +33,13 @@ const App: FC = () => {
 	
 	return (
 		<>
+		<BrowserRouter>
+		  <Routes>
+			  <Route path="/" element={<Main account={account}/>} />
+			  <Route path="/mypage" element={<MyPage account={account}/>} />
+		  </Routes>
+		</BrowserRouter>
 		<div>{account}</div>
-		<Main account={account}/>
 		</>
 	)
 };

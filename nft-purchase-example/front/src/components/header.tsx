@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import {Link} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,8 +34,8 @@ const Header: React.FC = () => {
           <Typography variant="h6" className={classes.title}>
             <img src={"logo192.png"} width="50" height="50" alt="Logo" />
           </Typography>
-          <Button color="inherit">메인</Button>
-          <Button color="inherit">보유 카드</Button>
+          <Link to="/"><Button color="inherit">메인</Button></Link>
+          <Link to="/mypage"><Button color="inherit">보유 카드</Button></Link>
         </Toolbar>
       </AppBar>
     </div>
