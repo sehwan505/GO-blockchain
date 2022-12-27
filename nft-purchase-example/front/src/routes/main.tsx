@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 
 
 const Main: FC<MainProps> = ({account}) => {
-	const [newCardType, setNewCardType] = useState<string>("");
+	const [newCard, setNewCard] = useState<string[]>(["0", "0"]);
   	const classes = useStyles();
 
 	
@@ -45,7 +45,7 @@ const Main: FC<MainProps> = ({account}) => {
 				const type = await mintTokenContract.methods
 					.tokenTypes(tokenId)
 					.call()
-				setNewCardType(type)
+				setNewCard([tokenId, type]);
 			}
 			console.log(response);
 		}catch (error){
@@ -58,9 +58,9 @@ const Main: FC<MainProps> = ({account}) => {
 		<>
 			<Header />
 			<div className={classes.root}>
-			  <Card cardType={newCardType} />
+			  <Card cardId={newCard[0]} cardType={newCard[1]} cardPrice="0"/>
 			  <Button variant="contained" color="primary" onClick={onClickMount}>
-				Mint{newCardType}
+				Mint
 			  </Button>
 			</div>
 		</>

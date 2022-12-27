@@ -16,11 +16,14 @@ const useStyles = makeStyles({
 });
 
 interface CardProps {
+	cardId: string;
 	cardType: string;
+	cardPrice: string;
 }
 
-const MyCard: React.FC<CardProps> = ({ cardType }) => {
+const MyCard: React.FC<CardProps> = ({ cardId, cardType, cardPrice }) => {
   const classes = useStyles();
+  const nameList = ["혜인", "해린", "민지", "하니", "다니엘"]
 	
   return (
     <Card className={classes.root}>
@@ -31,7 +34,7 @@ const MyCard: React.FC<CardProps> = ({ cardType }) => {
       />
       <CardContent>
         <Typography variant="h5" component="h2">
-          카드 이름
+          {nameList[parseInt(cardType) % 5]}
         </Typography>
         <Typography variant="body2" component="p">
           설명

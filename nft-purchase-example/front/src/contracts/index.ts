@@ -575,8 +575,8 @@ const saleTokenAbi: AbiItem[] = [
 	}
 ]
 
-const mintTokenAddress = "0x57Fb735A4f3B189bE8b377999aBA3cEE9B0f8C11"
-const saleTokenAddress = "0xcDF7E37a5D05301872D33D93EC8Dc52f50c3ABdd"
+export const mintTokenAddress = "0x57Fb735A4f3B189bE8b377999aBA3cEE9B0f8C11"
+export const saleTokenAddress = "0xcDF7E37a5D05301872D33D93EC8Dc52f50c3ABdd"
 
 export const web3 = new Web3(window.ethereum);
 export const mintTokenContract = new web3.eth.Contract(

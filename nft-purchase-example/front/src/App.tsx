@@ -39,7 +39,6 @@ const App: FC = () => {
 			  <Route path="/mypage" element={<MyPage account={account}/>} />
 		  </Routes>
 		</BrowserRouter>
-		<div>{account}</div>
 		</>
 	)
 };
