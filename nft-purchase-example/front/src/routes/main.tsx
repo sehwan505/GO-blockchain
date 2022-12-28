@@ -58,7 +58,7 @@ const Main: FC<MainProps> = ({account}) => {
 		<>
 			<Header />
 			<div className={classes.root}>
-			  <Card cardId={newCard[0]} cardType={newCard[1]} cardPrice="0"/>
+			  <Card account={account} cardId={newCard[0]} cardType={newCard[1]} cardPrice="0"/>
 			  <Button variant="contained" color="primary" onClick={onClickMount}>
 				Mint
 			  </Button>

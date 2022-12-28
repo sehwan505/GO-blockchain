@@ -11,6 +11,12 @@ interface CardListProps {
   account: string;
 }
 
+type iTokenData = {
+    TokenId: string;
+    TokenType: string;
+    TokenPrice: string; // ?는 해당 속성이 존재하지 않을 수도 있다는 것을 명시
+};
+
 const useStyles = makeStyles({
   root: {
     display: 'flex',
@@ -22,7 +28,7 @@ const useStyles = makeStyles({
 });
 
 const MyPage: React.FC<CardListProps> = ({ account }) => {
-  const [cardArray, setCardArray] = useState<string[]>();
+  const [cardArray, setCardArray] = useState<iTokenData[]>();
   const [saleStatus, setSaleStatus] = useState<boolean>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const classes = useStyles();
@@ -34,28 +40,24 @@ const MyPage: React.FC<CardListProps> = ({ account }) => {
 			if (!account) {
 				return;
 			}
-			const tempArray = [];
+			const tempArray:iTokenData[] = [];
 				
 			const balanceLength = await mintTokenContract.methods
 				.balanceOf(account[0])
 				.call()
-			console.log("A");
-			for (let i = 0; i < parseInt(balanceLength, 10); i++) {
-				console.log("B");
-				const tokenId = await mintTokenContract.methods
-				.tokenOfOwnerByIndex(account[0], i)
-				.call()
-				
-				const tokenPrice = await saleTokenContract.methods
-				.getTokenPrice(tokenId)
-				.call()
-
-				const tokenType = await mintTokenContract.methods
-				.tokenTypes(tokenId)
-				.call()
-
-				tempArray.push({tokenId, tokenType, tokenPrice});
+			if (balanceLength == 0) {
+				return ;
 			}
+			const ret = await mintTokenContract.methods
+			.getTokens(account[0])
+			.call()
+			
+			console.log(ret);
+			
+			ret.map((v:iTokenData) => {
+				tempArray.push({TokenId: v.TokenId, TokenType: v.TokenType, TokenPrice: v.TokenPrice});
+			})
+		  	console.log(tempArray);
 			setCardArray(tempArray);
 		    setIsLoading(false);
 		}catch (error){
@@ -81,7 +83,6 @@ const MyPage: React.FC<CardListProps> = ({ account }) => {
 			.setApprovalForAll(saleTokenAddress, !saleStatus)
 			.send({from: account[0]})
 	  if (response) {
-		
 		setSaleStatus(!saleStatus);  
 	  }
 	  
@@ -114,7 +115,7 @@ const MyPage: React.FC<CardListProps> = ({ account }) => {
 
 			  {cardArray && cardArray.map((card, index) => (
 				<Grid item xs={3}>
-					<Card key={index} cardId={card.tokenId} cardType={card.tokenType} cardPrice={card.tokenPrice} />
+					<Card key={card.TokenId} account={account} cardId={card.TokenId} cardType={card.TokenType} cardPrice={card.TokenPrice} />
 				</Grid>
 			  ))}
 			  </Grid>
