@@ -36,6 +36,8 @@ const Header: React.FC = () => {
           </Typography>
           <Button color="inherit"><Link to="/">메인</Link></Button>
           <Button color="inherit"><Link to="/mypage">보유 카드</Link></Button>
+		  <Button color="inherit"><Link to="/market">마켓</Link></Button>
+
         </Toolbar>
       </AppBar>
     </div>

@@ -27,14 +27,14 @@ const useStyles = makeStyles({
   }
 });
 
-const MyPage: React.FC<CardListProps> = ({ account }) => {
+const Market: React.FC<CardListProps> = ({ account }) => {
   const [cardArray, setCardArray] = useState<iTokenData[]>();
   const [saleStatus, setSaleStatus] = useState<boolean>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const classes = useStyles();
 
 	
-  const getMyCards = async () => {
+  const getOnSaleToken = async () => {
 	  try{
 		    setIsLoading(true);
 			if (!account) {
@@ -42,21 +42,29 @@ const MyPage: React.FC<CardListProps> = ({ account }) => {
 			}
 			const tempArray:iTokenData[] = [];
 				
-			const balanceLength = await mintTokenContract.methods
-				.balanceOf(account[0])
+			const balanceLength = await saleTokenContract.methods
+				.getOnSaleTokenArrayLength()
 				.call()
+			console.log(balanceLength);
 			if (balanceLength == 0) {
 				return ;
 			}
-			const ret = await mintTokenContract.methods
-			.getTokens(account[0])
-			.call()
-			
-			console.log(ret);
-			
-			ret.map((v:iTokenData) => {
-				tempArray.push({TokenId: v.TokenId, TokenType: v.TokenType, TokenPrice: v.TokenPrice});
-			})
+		    for (let i = 0; i < parseInt(balanceLength, 10); i++){
+				const tokenId = await saleTokenContract.methods
+				.onSaleTokenArray(i)
+				.call()
+				
+				const tokenType = await mintTokenContract.methods
+				.tokenTypes(tokenId)
+				.call()
+				
+				const tokenPrice = await saleTokenContract.methods
+				.tokenPrices(tokenId)
+				.call()
+				
+				console.log("tokenId");
+				tempArray.push({TokenId: tokenId, TokenType: tokenType, TokenPrice: tokenPrice})
+			}
 		  	console.log(tempArray);
 			setCardArray(tempArray);
 		    setIsLoading(false);
@@ -65,35 +73,24 @@ const MyPage: React.FC<CardListProps> = ({ account }) => {
 		}
   }
   
-  const getSaleStatus = async() => {
+  const onClickBuy = (tokenId: string, tokenPrice: string) => {
 	  if (!account) {
-		  return ;
+		return;
 	  }
-	  const isApprovedForAll = await mintTokenContract.methods
-			.isApprovedForAll(account[0], saleTokenAddress)
-			.call()
-	  setSaleStatus(isApprovedForAll);
+	  const response = saleTokenContract.methods
+	  .purchaseToken(tokenId)
+	  .send({from: account[0], gasLimit:3000000, value: tokenPrice})
+	  if (response.status){
+		  getOnSaleToken();
+	  }
   }
   
-  const setApprovalForAll = async() => {
-	  if (!account) {
-		  return ;
-	  }
-	  const response = await mintTokenContract.methods
-			.setApprovalForAll(saleTokenAddress, !saleStatus)
-			.send({from: account[0], gas:3000000})
-	  if (response) {
-		setSaleStatus(!saleStatus);  
-	  }
-	  
-  }
   useEffect(() => {
 	  if (!account) {
 		  return;
 	  }
 	  console.log("getMyCard");
-	  getMyCards();
-	  getSaleStatus();
+	  getOnSaleToken();
   }, []);
 
   return (
@@ -106,16 +103,11 @@ const MyPage: React.FC<CardListProps> = ({ account }) => {
 		:
 		  <>
 		  	  <Header />
-	   		  {!saleStatus ?
-				  <Button onClick={setApprovalForAll}>판매자 설정</Button>
-			   	:
-				  <Button onClick={setApprovalForAll}>판매자 취소</Button>
-			  }
 			  <Grid container spacing={3}>
-
 			  {cardArray && cardArray.map((card, index) => (
 				<Grid item xs={3}>
 					<Card key={card.TokenId} account={account} cardId={card.TokenId} cardType={card.TokenType} cardPrice={card.TokenPrice} />
+				    <Button variant="contained" color="primary" onClick={() => {onClickBuy(card.TokenId, card.TokenPrice);}}>구매</Button>
 				</Grid>
 			  ))}
 			  </Grid>
@@ -126,5 +118,5 @@ const MyPage: React.FC<CardListProps> = ({ account }) => {
   );
 };
 
-export default MyPage;
+export default Market;
 

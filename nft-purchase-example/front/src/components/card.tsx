@@ -45,7 +45,7 @@ const MyCard: React.FC<CardProps> = ({ account, cardId, cardType, cardPrice }) =
 		const priceAsWei = web3.utils.toWei(inputPrice, "ether");
 	    const response = await saleTokenContract.methods
 		  	.setForSaleToken(cardId, priceAsWei)
-			.send({from: account[0]})
+			.send({from: account[0], gas: 3000000})
 		if (response.status){
 			setTokenPrice(priceAsWei);
 		}
@@ -68,7 +68,7 @@ const MyCard: React.FC<CardProps> = ({ account, cardId, cardType, cardPrice }) =
         </Typography>
 		{ TokenPrice == "0" ?
 		<>
-		<TextField id="outlined-basic" label="Outlined" variant="outlined" onChange={onChange}/>
+		<TextField id="outlined-basic" variant="outlined" onChange={onChange}/>
 		<Button onClick={sellToken}>팔기</Button>
 		</>
 		:
